@@ -1,11 +1,215 @@
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+html {
+  scroll-behavior: smooth;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@custom-variant dark (&:is(.dark *));
+
+/* Jukung Bulik Dark Theater Theme */
+:root {
+  /* Base Colors - Dark Navy/Teal */
+  --background: oklch(0.12 0.02 240);
+  --foreground: oklch(0.95 0.01 60);
+  
+  /* Card - Slightly lighter dark */
+  --card: oklch(0.15 0.02 240);
+  --card-foreground: oklch(0.95 0.01 60);
+  
+  /* Popover */
+  --popover: oklch(0.13 0.02 240);
+  --popover-foreground: oklch(0.95 0.01 60);
+  
+  /* Primary - Gold/Amber */
+  --primary: oklch(0.75 0.14 80);
+  --primary-foreground: oklch(0.12 0.02 240);
+  
+  /* Secondary - Deep Navy */
+  --secondary: oklch(0.18 0.03 240);
+  --secondary-foreground: oklch(0.95 0.01 60);
+  
+  /* Muted */
+  --muted: oklch(0.20 0.02 240);
+  --muted-foreground: oklch(0.65 0.02 60);
+  
+  /* Accent - Brighter Gold */
+  --accent: oklch(0.82 0.16 85);
+  --accent-foreground: oklch(0.12 0.02 240);
+  
+  /* Destructive */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.95 0.01 60);
+  
+  /* Borders & Input */
+  --border: oklch(0.28 0.03 240);
+  --input: oklch(0.20 0.02 240);
+  --ring: oklch(0.75 0.14 80);
+  
+  /* Charts */
+  --chart-1: oklch(0.75 0.14 80);
+  --chart-2: oklch(0.60 0.12 200);
+  --chart-3: oklch(0.50 0.08 240);
+  --chart-4: oklch(0.82 0.16 85);
+  --chart-5: oklch(0.70 0.10 180);
+  
+  --radius: 0.625rem;
+  
+  /* Sidebar */
+  --sidebar: oklch(0.10 0.02 240);
+  --sidebar-foreground: oklch(0.95 0.01 60);
+  --sidebar-primary: oklch(0.75 0.14 80);
+  --sidebar-primary-foreground: oklch(0.12 0.02 240);
+  --sidebar-accent: oklch(0.18 0.03 240);
+  --sidebar-accent-foreground: oklch(0.95 0.01 60);
+  --sidebar-border: oklch(0.28 0.03 240);
+  --sidebar-ring: oklch(0.75 0.14 80);
+}
+
+@theme inline {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Cinzel', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  section {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* Gold Gradient Text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #c9a84c 0%, #f0c040 50%, #c9a84c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold Shimmer Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, #c9a84c 0%, #f0c040 25%, #fff8dc 50%, #f0c040 75%, #c9a84c 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Floating Particles Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.particle {
+  animation: float linear infinite;
+}
+
+/* Flip Card Animation for Countdown */
+@keyframes flip {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+.flip-animate {
+  animation: flip 0.6s ease-in-out;
+}
+
+/* Pulse Glow for Gold Elements */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(201, 168, 76, 0.3), 0 0 10px rgba(201, 168, 76, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(201, 168, 76, 0.5), 0 0 25px rgba(201, 168, 76, 0.3);
+  }
+}
+
+.gold-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Scroll Indicator Animation */
+@keyframes bounce-scroll {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.scroll-indicator {
+  animation: bounce-scroll 2s ease-in-out infinite;
 }
