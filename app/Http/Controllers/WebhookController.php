@@ -12,10 +12,25 @@ class WebhookController extends Controller
 {
     public function xendit(Request $request)
     {
+        $clientIP = $request->header('CF-Connecting-IP') ?? $request->ip();
+        $allowedIPs = config('services.xendit.webhook_ips', []);
+
+        if (app()->environment('local', 'testing')) {
+            $allowedIPs[] = '127.0.0.1';
+            $allowedIPs[] = '::1';
+        }
+
+        if (!app()->environment('local', 'testing') && !in_array($clientIP, $allowedIPs)) {
+            Log::warning('Xendit webhook: unauthorized IP address', [
+                'ip' => $clientIP,
+            ]);
+            return response()->json(['message' => 'Unauthorized IP'], 401);
+        }
+
         $callbackToken = $request->header('x-callback-token');
         if (!$callbackToken || $callbackToken !== config('services.xendit.webhook_token')) {
             Log::warning('Xendit webhook: invalid token', [
-                'ip' => $request->ip(),
+                'ip' => $clientIP,
                 'token' => substr($callbackToken ?? '', 0, 5) . '...',
             ]);
             return response()->json(['message' => 'Unauthorized'], 401);

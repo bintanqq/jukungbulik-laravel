@@ -43,7 +43,7 @@ class TicketController extends Controller
         }
 
         do {
-            $ticketCode = 'JB2026-' . strtoupper(Str::random(4));
+            $ticketCode = 'JB2026-' . strtoupper(Str::random(8));
         } while (Order::where('ticket_code', $ticketCode)->exists());
 
         $unitPrice = $category->base_price * (1 - $period->discount / 100);
@@ -64,7 +64,15 @@ class TicketController extends Controller
 
         try {
             Configuration::setXenditKey(config('services.xendit.secret_key'));
-            $apiInstance = new InvoiceApi();
+            
+            $client = null;
+            if (app()->environment('local')) {
+                $client = new \GuzzleHttp\Client([
+                    'verify' => false,
+                ]);
+            }
+            
+            $apiInstance = new InvoiceApi($client);
             $createInvoiceRequest = new CreateInvoiceRequest([
                 'external_id' => $order->ticket_code,
                 'amount' => $order->total_price,

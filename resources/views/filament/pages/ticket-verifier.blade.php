@@ -27,7 +27,7 @@
             </div>
 
             <form wire:submit.prevent="verifyTicket" class="space-y-4">
-                <input type="text" wire:model="ticketCode" class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-lg uppercase tracking-wider p-4" placeholder="Contoh: JB2026-A3F7" autofocus>
+                <input type="text" wire:model="ticketCode" class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-lg uppercase tracking-wider p-4" placeholder="Contoh: JB2026-A3F7B2C9" autofocus>
                 <x-filament::button type="submit" size="lg" class="w-full">
                     Cek Tiket
                 </x-filament::button>

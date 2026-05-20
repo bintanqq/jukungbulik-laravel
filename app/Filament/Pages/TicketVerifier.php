@@ -16,12 +16,20 @@ class TicketVerifier extends Page
 
     public function verifyTicket()
     {
-        if (empty($this->ticketCode)) {
+        \Illuminate\Support\Facades\Log::info('Verifying ticket code', [
+            'raw_code' => $this->ticketCode,
+            'trimmed_code' => trim($this->ticketCode),
+            'upper_code' => strtoupper(trim($this->ticketCode))
+        ]);
+
+        $code = strtoupper(trim($this->ticketCode));
+
+        if (empty($code)) {
             $this->result = null;
             return;
         }
 
-        $order = Order::where('ticket_code', strtoupper($this->ticketCode))->first();
+        $order = Order::where('ticket_code', $code)->first();
 
         if (!$order) {
             $this->result = ['status' => 'not_found', 'message' => '❌ TIDAK VALID: Kode tiket tidak ditemukan'];

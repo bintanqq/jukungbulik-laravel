@@ -28,6 +28,7 @@
 </head>
 <body class="bg-background text-foreground font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden w-full">
     
+    <x-preloader />
 
     <nav x-data="{ scrolled: false, isMobileMenuOpen: false }" 
          @scroll.window="scrolled = (window.pageYOffset > 50)"

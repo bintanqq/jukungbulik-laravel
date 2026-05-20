@@ -3,99 +3,190 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    /* PENTING: Gunakan DejaVu Sans untuk PDF agar rendering stabil di DomPDF */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page {
+      margin: 0px;
+    }
+    html, body {
+      margin: 0px;
+      padding: 0px;
+      background-color: #0a0f1e;
+      width: 100%;
+      height: 100%;
+    }
     body {
       font-family: 'DejaVu Sans', sans-serif;
-      background: #0a0f1e;
       color: #f5f0e8;
-      width: 595px;
-      height: 420px;
-      padding: 24px;
     }
-    .ticket-wrapper {
+    .container {
       border: 2px solid #c9a84c;
       border-radius: 8px;
-      padding: 20px;
-      height: 372px;
-      background: #0d1428;
+      background-color: #0d1428;
+      padding: 18px;
+      
+      /* Pemosisian absolut untuk akurasi border di DomPDF */
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
     }
-    .header { border-bottom: 1px solid #c9a84c44; padding-bottom: 12px; margin-bottom: 16px; }
-    .event-name { font-size: 22px; font-weight: bold; color: #c9a84c; letter-spacing: 3px; }
-    .event-sub { font-size: 10px; color: #a0a0a0; margin-top: 2px; }
-    .body { display: table; width: 100%; }
-    .info { display: table-cell; width: 65%; vertical-align: top; padding-right: 20px; }
-    .qr-section {
-      display: table-cell;
-      width: 35%;
-      vertical-align: middle;
+    .header {
       text-align: center;
-      border-left: 1px dashed #c9a84c44;
-      padding-left: 20px;
+      border-bottom: 2px solid #c9a84c;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
     }
-    .info-row { margin-bottom: 10px; }
-    .info-label { font-size: 9px; color: #a0a0a0; text-transform: uppercase; letter-spacing: 1px; }
-    .info-value { font-size: 13px; color: #f5f0e8; font-weight: bold; margin-top: 2px; }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #c9a84c;
+      letter-spacing: 3px;
+      margin: 0;
+    }
+    .subtitle {
+      font-size: 8px;
+      color: #a0a0a0;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+    .greeting {
+      font-size: 12px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+    .intro {
+      font-size: 9px;
+      color: #a0a0a0;
+      margin-bottom: 8px;
+    }
+    .info-box {
+      background-color: #0a0f1e;
+      border: 1px solid #c9a84c33;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    .info-row {
+      display: table;
+      width: 100%;
+      padding: 3px 0;
+      border-bottom: 1px solid #ffffff11;
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      display: table-cell;
+      width: 40%;
+      font-size: 9px;
+      color: #a0a0a0;
+    }
+    .info-value {
+      display: table-cell;
+      width: 60%;
+      font-size: 9px;
+      color: #f5f0e8;
+      font-weight: bold;
+      text-align: right;
+    }
     .ticket-code {
-      font-size: 18px; color: #c9a84c; letter-spacing: 4px;
-      background: #c9a84c11; border: 1px solid #c9a84c44;
-      padding: 6px 10px; border-radius: 4px; display: inline-block; margin-top: 4px;
+      color: #c9a84c;
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
     }
-    .qr-section img { width: 130px; height: 130px; }
-    .qr-label { font-size: 8px; color: #a0a0a0; margin-top: 6px; }
-    .category-badge {
-      display: inline-block; background: #c9a84c22; border: 1px solid #c9a84c;
-      color: #c9a84c; font-size: 10px; font-weight: bold;
-      padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;
+    .qr-section {
+      text-align: center;
+      margin-bottom: 10px;
+      padding: 8px;
+      background-color: #0a0f1e;
+      border: 1px dashed #c9a84c44;
+      border-radius: 6px;
+    }
+    .qr-section img {
+      width: 135px; /* Memperbesar QR code */
+      height: 135px;
+    }
+    .qr-label {
+      font-size: 8px;
+      color: #a0a0a0;
+      margin-top: 4px;
+    }
+    .event-box {
+      background-color: #0a0f1e;
+      border-left: 3px solid #c9a84c;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+    }
+    .event-title {
+      color: #c9a84c;
+      font-weight: bold;
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+    .event-detail {
+      font-size: 9px;
+      color: #f5f0e8;
+      margin: 2px 0;
     }
     .footer {
-      border-top: 1px solid #c9a84c44; padding-top: 8px; margin-top: 12px;
-      font-size: 8px; color: #555; text-align: center;
+      text-align: center;
+      font-size: 7px;
+      color: #555;
+      border-top: 1px solid #1a2040;
+      padding-top: 8px;
+      margin-top: 10px; /* Jarak aman di akhir halaman */
     }
   </style>
 </head>
 <body>
-  <div class="ticket-wrapper">
+  <div class="container">
     <div class="header">
-      <div class="event-name">JUKUNG BULIK</div>
-      <div class="event-sub">PERTUNJUKAN TEATER TRADISIONAL BANJAR</div>
+      <div class="title">JUKUNG BULIK</div>
+      <div class="subtitle">PERTUNJUKAN TEATER TRADISIONAL BANJAR</div>
     </div>
-    <div class="body">
-      <div class="info">
-        <div class="info-row">
-          <div class="info-label">Nama Pemegang</div>
-          <div class="info-value">{{ $order->nama }}</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Kategori</div>
-          <div class="info-value">
-            <span class="category-badge">{{ strtoupper($order->ticketCategory->name) }}</span>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Jumlah Tiket</div>
-          <div class="info-value">{{ $order->quantity }} tiket</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Tanggal Acara</div>
-          <div class="info-value">01 Oktober 2026 • 19.00 WITA</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Venue</div>
-          <div class="info-value">Gedung Balairung Banjarmasin</div>
-        </div>
-        <div class="info-row">
-          <div class="info-label">Kode Tiket</div>
-          <div class="ticket-code">{{ $order->ticket_code }}</div>
-        </div>
+    
+    <div class="greeting">Halo, {{ $order->nama }}!</div>
+    <div class="intro">Pembayaran Anda telah dikonfirmasi. Berikut detail tiket resmi Anda:</div>
+    
+    <div class="info-box">
+      <div class="info-row">
+        <div class="info-label">Kode Tiket</div>
+        <div class="info-value ticket-code">{{ $order->ticket_code }}</div>
       </div>
-      <div class="qr-section">
-        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
-        <div class="qr-label">Tunjukkan QR atau kode tiket<br>saat masuk venue</div>
+      <div class="info-row">
+        <div class="info-label">Nama</div>
+        <div class="info-value">{{ $order->nama }}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Kategori</div>
+        <div class="info-value">{{ strtoupper($order->ticketCategory->name) }}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Jumlah</div>
+        <div class="info-value">{{ $order->quantity }} tiket</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Total Bayar</div>
+        <div class="info-value">Rp{{ number_format($order->total_price, 0, ',', '.') }}</div>
       </div>
     </div>
+    
+    <div class="qr-section">
+      <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+      <div class="qr-label">Tunjukkan QR code ini saat memasuki venue.</div>
+    </div>
+    
+    <div class="event-box">
+      <div class="event-title">📅 Info Acara</div>
+      <div class="event-detail">Tanggal: <strong>01 Oktober 2026</strong></div>
+      <div class="event-detail">Waktu: <strong>19.00 WITA</strong></div>
+      <div class="event-detail">Venue: <strong>Gedung Balairung Banjarmasin</strong></div>
+    </div>
+    
     <div class="footer">
-      E-ticket berlaku untuk {{ $order->quantity }} orang. Dilarang memperbanyak tanpa izin panitia.
+      © 2026 JUKUNG BULIK. E-ticket ini berlaku untuk {{ $order->quantity }} orang.<br>
+      Dilarang memperbanyak atau memindahtangankan tanpa izin panitia.
     </div>
   </div>
 </body>

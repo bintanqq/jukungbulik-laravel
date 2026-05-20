@@ -15,6 +15,30 @@ class BuyTicketForm extends Component
     public int $quantity = 1;
     public bool $isLoading = false;
 
+    protected $rules = [
+        'nama'     => 'required|string|min:3|max:100',
+        'whatsapp' => 'required|regex:/^08[0-9]{8,12}$/',
+        'email'    => 'required|email|max:150',
+        'quantity' => 'required|integer|min:1|max:5',
+    ];
+
+    protected $messages = [
+        'nama.required' => 'Nama lengkap wajib diisi.',
+        'nama.min' => 'Nama minimal terdiri dari 3 karakter.',
+        'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+        'whatsapp.regex' => 'Format nomor WhatsApp tidak valid (contoh: 081234567890).',
+        'email.required' => 'Alamat email wajib diisi.',
+        'email.email' => 'Format alamat email tidak valid.',
+        'quantity.required' => 'Jumlah tiket wajib diisi.',
+        'quantity.min' => 'Minimal pembelian 1 tiket.',
+        'quantity.max' => 'Maksimal pembelian 5 tiket.',
+    ];
+
+    public function updated($field)
+    {
+        $this->validateOnly($field);
+    }
+
     public function mount()
     {
         $categories = TicketCategory::where('is_active', true)->get();

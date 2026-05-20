@@ -34,7 +34,7 @@ class GenerateAndEmailTicket implements ShouldQueue
         $pdf = Pdf::loadView('pdf.eticket', [
             'order'  => $this->order->load('ticketCategory'),
             'qrCode' => $qrCode,
-        ])->setPaper([0, 0, 595, 420], 'landscape');
+        ])->setPaper([0, 0, 420, 595], 'portrait');
 
         Mail::to($this->order->email)
             ->send(new ETicketMail($this->order, $pdf->output()));

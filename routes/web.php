@@ -11,14 +11,19 @@ Route::get('/tentang', [PageController::class, 'about'])->name('about');
 Route::get('/galeri', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/kontak', [PageController::class, 'contact'])->name('contact');
 
-Route::middleware(['throttle:5,1'])->group(function () {
-    Route::get('/beli-tiket', [TicketController::class, 'index'])->name('ticket.index');
-    Route::post('/beli-tiket', [TicketController::class, 'store'])->name('ticket.store');
-});
+Route::get('/beli-tiket', [TicketController::class, 'index'])->middleware('throttle:60,1')->name('ticket.index');
+Route::post('/beli-tiket', [TicketController::class, 'store'])->middleware('throttle:ticket_purchase')->name('ticket.store');
 
 Route::get('/beli-tiket/sukses/{ticketCode}', [TicketController::class, 'success'])->name('ticket.success');
 Route::get('/beli-tiket/gagal/{ticketCode}', [TicketController::class, 'failed'])->name('ticket.failed');
 
 // Note: In Laravel 11/13, exempting from CSRF can be done here or in bootstrap/app.php
+Route::get('/webhook/xendit', function () {
+    return response()->json([
+        'status' => 'online',
+        'message' => 'Xendit Webhook Endpoint is active. Please use the POST method for callbacks.',
+    ]);
+});
+
 Route::post('/webhook/xendit', [WebhookController::class, 'xendit'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

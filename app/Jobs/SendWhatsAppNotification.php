@@ -37,15 +37,21 @@ class SendWhatsAppNotification implements ShouldQueue
             . "📍 Gedung Balairung Banjarmasin\n\n"
             . "_Sampai jumpa di pertunjukan!_ 🎉";
 
-        $response = Http::withHeaders([
+        $httpClient = Http::withHeaders([
             'Authorization' => config('services.fonnte.token'),
-        ])->post('https://api.fonnte.com/send', [
+        ]);
+
+        if (app()->environment('local')) {
+            $httpClient->withoutVerifying();
+        }
+
+        $response = $httpClient->post('https://api.fonnte.com/send', [
             'target'      => $this->order->whatsapp,
             'message'     => $message,
             'countryCode' => '62',
         ]);
 
-        if ($response->successful()) {
+        if ($response->successful() && $response->json('status') === true) {
             $this->order->update([
                 'wa_sent'    => true,
                 'wa_sent_at' => now(),
@@ -55,6 +61,7 @@ class SendWhatsAppNotification implements ShouldQueue
                 'order_id' => $this->order->id,
                 'response' => $response->body(),
             ]);
+            throw new \Exception('Fonnte WA failed: ' . ($response->json('reason') ?? $response->body()));
         }
     }
 }

@@ -22,3 +22,12 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# SQLite database files
+*.sqlite
+*.sqlite-journal
+
+# Executables and scripts
+*.exe
+*.bat
+*.cmd
