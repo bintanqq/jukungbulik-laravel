@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Order;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\DB;
 
 class TicketVerifier extends Page
 {
@@ -16,12 +17,6 @@ class TicketVerifier extends Page
 
     public function verifyTicket()
     {
-        \Illuminate\Support\Facades\Log::info('Verifying ticket code', [
-            'raw_code' => $this->ticketCode,
-            'trimmed_code' => trim($this->ticketCode),
-            'upper_code' => strtoupper(trim($this->ticketCode))
-        ]);
-
         $code = strtoupper(trim($this->ticketCode));
 
         if (empty($code)) {
@@ -59,25 +54,45 @@ class TicketVerifier extends Page
 
     public function markAsScanned()
     {
-        if ($this->result && isset($this->result['order'])) {
-            $order = $this->result['order'];
-            $order->update([
-                'scan_status' => 'scanned',
-                'scanned_at' => now()
-            ]);
-            
+        if (!$this->result || !isset($this->result['order'])) {
+            return;
+        }
+
+        // Re-fetch with lock inside a transaction to prevent double-scan
+        // Two staff members scanning the same QR simultaneously would race without this
+        $success = DB::transaction(function () {
+            $order = Order::where('id', $this->result['order']->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$order || $order->scan_status === 'scanned') {
+                return false; // Already scanned by another staff
+            }
+
+            $order->scan_status = 'scanned';
+            $order->scanned_at = now();
+            $order->save();
+
+            return $order;
+        });
+
+        if ($success === false) {
             $this->result['status'] = 'already_scanned';
-            $this->result['message'] = '⚠️ SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $order->scanned_at->format('d M Y H:i');
+            $this->result['message'] = '⚠️ SUDAH DIPAKAI: Tiket sudah di-scan oleh petugas lain';
+        } else {
+            $this->result['status'] = 'already_scanned';
+            $this->result['message'] = '⚠️ SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $success->scanned_at->format('d M Y H:i');
             
             $history = session()->get('scan_history', []);
             array_unshift($history, [
-                'code' => $order->ticket_code,
+                'code' => $success->ticket_code,
                 'time' => now()->format('H:i:s'),
                 'status' => 'Berhasil'
             ]);
             session()->put('scan_history', array_slice($history, 0, 10));
-            
-            $this->ticketCode = '';
         }
+
+        $this->ticketCode = '';
     }
 }
+

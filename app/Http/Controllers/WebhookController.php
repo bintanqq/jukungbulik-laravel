@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Jobs\SendWhatsAppNotification;
 use App\Jobs\GenerateAndEmailTicket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
@@ -27,8 +28,9 @@ class WebhookController extends Controller
             return response()->json(['message' => 'Unauthorized IP'], 401);
         }
 
+        // Validate callback token — this is the PRIMARY defense against forged webhooks
         $callbackToken = $request->header('x-callback-token');
-        if (!$callbackToken || $callbackToken !== config('services.xendit.webhook_token')) {
+        if (!$callbackToken || !hash_equals(config('services.xendit.webhook_token'), $callbackToken)) {
             Log::warning('Xendit webhook: invalid token', [
                 'ip' => $clientIP,
                 'token' => substr($callbackToken ?? '', 0, 5) . '...',
@@ -48,26 +50,52 @@ class WebhookController extends Controller
             return response()->json(['message' => 'Ignored'], 200);
         }
 
-        $order = Order::where('ticket_code', $data['external_id'])->first();
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
+        // Use transaction + row lock to prevent double-processing from webhook retries
+        $result = DB::transaction(function () use ($data) {
+            $order = Order::where('ticket_code', $data['external_id'])
+                ->lockForUpdate()
+                ->first();
 
-        if ($order->payment_status === 'confirmed') {
-            return response()->json(['message' => 'Already processed'], 200);
-        }
+            if (!$order) {
+                return response()->json(['message' => 'Order not found'], 404);
+            }
 
-        $order->update([
-            'payment_status' => 'confirmed',
-            'xendit_payment_method' => $data['payment_method'] ?? null,
-            'payment_confirmed_at' => now(),
-        ]);
+            // Idempotency: already processed — safe to return 200
+            if ($order->payment_status === 'confirmed') {
+                return response()->json(['message' => 'Already processed'], 200);
+            }
 
-        $order->ticketCategory->increment('sold', $order->quantity);
+            // CRITICAL: Verify paid amount matches order total
+            // Prevents attacks where someone forges a webhook with amount=1
+            $paidAmount = (int) ($data['amount'] ?? 0);
+            if ($paidAmount !== (int) $order->total_price) {
+                Log::critical('Xendit webhook: AMOUNT MISMATCH — possible fraud attempt', [
+                    'order_id' => $order->id,
+                    'ticket_code' => $order->ticket_code,
+                    'expected' => $order->total_price,
+                    'received' => $paidAmount,
+                    'data' => $data,
+                ]);
+                return response()->json(['message' => 'Amount mismatch'], 400);
+            }
 
-        SendWhatsAppNotification::dispatch($order)->onQueue('notifications');
-        GenerateAndEmailTicket::dispatch($order)->onQueue('emails');
+            // Update payment status (using direct assignment, not mass-assignment)
+            $order->payment_status = 'confirmed';
+            $order->xendit_payment_method = $data['payment_method'] ?? null;
+            $order->payment_confirmed_at = now();
+            $order->save();
 
-        return response()->json(['message' => 'OK'], 200);
+            // Atomically increment sold count within the transaction
+            $order->ticketCategory->increment('sold', $order->quantity);
+
+            // Dispatch notifications
+            SendWhatsAppNotification::dispatch($order)->onQueue('notifications');
+            GenerateAndEmailTicket::dispatch($order)->onQueue('emails');
+
+            return response()->json(['message' => 'OK'], 200);
+        });
+
+        return $result;
     }
 }
+

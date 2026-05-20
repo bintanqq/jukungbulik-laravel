@@ -17,13 +17,7 @@ Route::post('/beli-tiket', [TicketController::class, 'store'])->middleware('thro
 Route::get('/beli-tiket/sukses/{ticketCode}', [TicketController::class, 'success'])->name('ticket.success');
 Route::get('/beli-tiket/gagal/{ticketCode}', [TicketController::class, 'failed'])->name('ticket.failed');
 
-// Note: In Laravel 11/13, exempting from CSRF can be done here or in bootstrap/app.php
-Route::get('/webhook/xendit', function () {
-    return response()->json([
-        'status' => 'online',
-        'message' => 'Xendit Webhook Endpoint is active. Please use the POST method for callbacks.',
-    ]);
-});
-
+// Xendit payment webhook — CSRF exempt for external callbacks
 Route::post('/webhook/xendit', [WebhookController::class, 'xendit'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
