@@ -15,11 +15,13 @@ class TicketCategory extends Model
         'icon',
         'benefits',
         'is_active',
+        'is_streaming',
     ];
 
     protected $casts = [
         'benefits' => 'array',
         'is_active' => 'boolean',
+        'is_streaming' => 'boolean',
     ];
 
     public function orders()

@@ -27,19 +27,19 @@ class TicketVerifier extends Page
         $order = Order::where('ticket_code', $code)->first();
 
         if (!$order) {
-            $this->result = ['status' => 'not_found', 'message' => '❌ TIDAK VALID: Kode tiket tidak ditemukan'];
+            $this->result = ['status' => 'not_found', 'message' => 'TIDAK VALID: Kode tiket tidak ditemukan'];
             return;
         }
 
         if ($order->payment_status !== 'confirmed') {
-            $this->result = ['status' => 'unpaid', 'message' => '❌ TIDAK VALID: Tiket belum lunas'];
+            $this->result = ['status' => 'unpaid', 'message' => 'TIDAK VALID: Tiket belum lunas'];
             return;
         }
 
         if ($order->scan_status === 'scanned') {
             $this->result = [
                 'status' => 'already_scanned', 
-                'message' => '⚠️ SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $order->scanned_at->format('d M Y H:i'),
+                'message' => 'SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $order->scanned_at->format('d M Y H:i'),
                 'order' => $order
             ];
             return;
@@ -47,7 +47,7 @@ class TicketVerifier extends Page
 
         $this->result = [
             'status' => 'valid', 
-            'message' => '✅ VALID: Tiket dapat digunakan',
+            'message' => 'VALID: Tiket dapat digunakan',
             'order' => $order
         ];
     }
@@ -78,10 +78,10 @@ class TicketVerifier extends Page
 
         if ($success === false) {
             $this->result['status'] = 'already_scanned';
-            $this->result['message'] = '⚠️ SUDAH DIPAKAI: Tiket sudah di-scan oleh petugas lain';
+            $this->result['message'] = 'SUDAH DIPAKAI: Tiket sudah di-scan oleh petugas lain';
         } else {
             $this->result['status'] = 'already_scanned';
-            $this->result['message'] = '⚠️ SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $success->scanned_at->format('d M Y H:i');
+            $this->result['message'] = 'SUDAH DIPAKAI: Tiket ini sudah di-scan pada ' . $success->scanned_at->format('d M Y H:i');
             
             $history = session()->get('scan_history', []);
             array_unshift($history, [

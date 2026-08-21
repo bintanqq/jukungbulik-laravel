@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
@@ -25,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
     {
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
+
+            // Safety net: alert if debug mode is accidentally enabled in production
+            if (config('app.debug')) {
+                Log::critical('⚠️ APP_DEBUG is TRUE in production! This exposes sensitive error details to users. Set APP_DEBUG=false in .env immediately.');
+            }
         }
 
         RateLimiter::for('ticket_purchase', function (Request $request) {

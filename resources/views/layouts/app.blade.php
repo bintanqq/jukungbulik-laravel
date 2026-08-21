@@ -49,6 +49,8 @@
                     <a href="{{ url('/tentang') }}" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Tentang</a>
                     <a href="{{ url('/galeri') }}" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Galeri</a>
                     <a href="{{ url('/kontak') }}" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Kontak</a>
+                    <a href="{{ url('/sertifikat') }}" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Sertifikat</a>
+                    <a href="{{ url('/streaming') }}" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Streaming</a>
                     <a href="{{ url('/beli-tiket') }}" class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">Beli Tiket</a>
                 </div>
 
@@ -65,6 +67,8 @@
                 <a href="{{ url('/tentang') }}" class="text-xl font-medium text-foreground hover:text-primary transition-colors" @click="isMobileMenuOpen = false">Tentang</a>
                 <a href="{{ url('/galeri') }}" class="text-xl font-medium text-foreground hover:text-primary transition-colors" @click="isMobileMenuOpen = false">Galeri</a>
                 <a href="{{ url('/kontak') }}" class="text-xl font-medium text-foreground hover:text-primary transition-colors" @click="isMobileMenuOpen = false">Kontak</a>
+                <a href="{{ url('/sertifikat') }}" class="text-xl font-medium text-foreground hover:text-primary transition-colors" @click="isMobileMenuOpen = false">Sertifikat</a>
+                <a href="{{ url('/streaming') }}" class="text-xl font-medium text-foreground hover:text-primary transition-colors" @click="isMobileMenuOpen = false">Streaming</a>
                 <a href="{{ url('/beli-tiket') }}" class="w-full max-w-xs mt-4 inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-lg font-medium text-primary-foreground hover:bg-primary/90 transition-colors" @click="isMobileMenuOpen = false">Beli Tiket</a>
             </div>
         </div>
@@ -102,6 +106,8 @@
                         <li><a href="{{ url('/tentang') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Tentang</a></li>
                         <li><a href="{{ url('/galeri') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Galeri</a></li>
                         <li><a href="{{ url('/kontak') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Kontak</a></li>
+                        <li><a href="{{ url('/sertifikat') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Sertifikat</a></li>
+                        <li><a href="{{ url('/streaming') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Streaming</a></li>
                         <li><a href="{{ url('/beli-tiket') }}" class="text-sm text-foreground/60 hover:text-primary transition-colors">Beli Tiket</a></li>
                     </ul>
                 </div>

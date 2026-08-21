@@ -19,6 +19,7 @@ class TicketCategorySeeder extends Seeder
                 'icon' => 'ticket',
                 'benefits' => json_encode(['Akses masuk pertunjukan', 'Tempat duduk reguler', 'E-ticket PDF via Email + Notif WA']),
                 'is_active' => true,
+                'is_streaming' => false,
             ],
             [
                 'name' => 'VIP',
@@ -29,6 +30,18 @@ class TicketCategorySeeder extends Seeder
                 'icon' => 'crown',
                 'benefits' => json_encode(['Akses masuk pertunjukan', 'Tempat duduk baris depan', 'Merchandise eksklusif', 'Sesi foto bersama pemain', 'E-ticket PDF via Email + Notif WA']),
                 'is_active' => true,
+                'is_streaming' => false,
+            ],
+            [
+                'name' => 'Streaming',
+                'slug' => 'streaming',
+                'base_price' => 50000,
+                'quota' => 50,
+                'sold' => 0,
+                'icon' => 'video',
+                'benefits' => json_encode(['Akses nonton streaming live', 'Sertifikat digital', 'Replay 24 jam']),
+                'is_active' => true,
+                'is_streaming' => true,
             ],
         ]);
     }

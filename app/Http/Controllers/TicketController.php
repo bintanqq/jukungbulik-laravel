@@ -9,6 +9,7 @@ use App\Models\TicketCategory;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
@@ -49,7 +50,7 @@ class TicketController extends Controller
             }
 
             do {
-                $ticketCode = 'JB2026-' . strtoupper(Str::random(8));
+                $ticketCode = 'JB2026-' . strtoupper(Str::random(12));
             } while (Order::where('ticket_code', $ticketCode)->exists());
 
             // Price is ALWAYS calculated server-side from DB values — never from user input
@@ -84,7 +85,7 @@ class TicketController extends Controller
 
             // SSL bypass only in local development — production always verifies
             $client = null;
-            if (app()->environment('local')) {
+            if (app()->environment('local') && config('app.debug')) {
                 $client = new \GuzzleHttp\Client([
                     'verify' => false,
                 ]);
@@ -109,8 +110,8 @@ class TicketController extends Controller
                     'price' => $order->unit_price,
                 ]],
                 'invoice_duration' => 86400,
-                'success_redirect_url' => route('ticket.success', ['ticketCode' => $order->ticket_code]),
-                'failure_redirect_url' => route('ticket.failed', ['ticketCode' => $order->ticket_code]),
+                'success_redirect_url' => URL::signedRoute('ticket.success', ['ticketCode' => $order->ticket_code]),
+                'failure_redirect_url' => URL::signedRoute('ticket.failed', ['ticketCode' => $order->ticket_code]),
             ]);
 
             $invoice = $apiInstance->createInvoice($createInvoiceRequest);

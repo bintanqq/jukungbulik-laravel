@@ -11,10 +11,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SendWhatsAppNotification implements ShouldQueue
+class SendCertificateWhatsApp implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    
+
     public int $tries = 3;
     public int $backoff = 60;
 
@@ -22,19 +22,13 @@ class SendWhatsAppNotification implements ShouldQueue
 
     public function handle(): void
     {
-        $code  = $this->order->ticket_code;
-        $total = 'Rp' . number_format($this->order->total_price, 0, ',', '.');
+        $downloadUrl = route('certificate.download', ['ticketCode' => $this->order->ticket_code]);
 
-        $message = "*PEMBAYARAN DIKONFIRMASI*\n\n"
-            . "Halo *{$this->order->nama}*,\n\n"
-            . "Pembayaran tiket JUKUNG BULIK Anda telah berhasil dikonfirmasi.\n\n"
-            . "*Kode Tiket:* `{$code}`\n"
-            . "*Total Pembayaran:* {$total}\n\n"
-            . "*E-Ticket PDF* beserta QR Code telah dikirimkan ke email:\n"
-            . "*{$this->order->email}*\n\n"
-            . "Silakan periksa folder Inbox atau Spam email Anda.\n\n"
-            . "Waktu: 01 Oktober 2026, 19.00 WITA\n"
-            . "Lokasi: Gedung Balairung Banjarmasin\n\n"
+        $message = "*SERTIFIKAT DIGITAL SIAP*\n\n"
+            . "Halo *{$this->order->certificate_name}*,\n\n"
+            . "Sertifikat JUKUNG BULIK 2026 Anda telah berhasil dibuat.\n\n"
+            . "*Kode Sertifikat:* `{$this->order->certificate_code}`\n"
+            . "*Tautan Unduh:* {$downloadUrl}\n\n"
             . "Terima kasih atas partisipasi Anda dalam pertunjukan Jukung Bulik.";
 
         $httpClient = Http::withHeaders([
@@ -53,15 +47,14 @@ class SendWhatsAppNotification implements ShouldQueue
 
         if ($response->successful() && $response->json('status') === true) {
             $this->order->update([
-                'wa_sent'    => true,
-                'wa_sent_at' => now(),
+                'certificate_sent_wa' => true,
             ]);
         } else {
-            Log::warning('Fonnte WA failed', [
+            Log::warning('Fonnte WA certificate failed', [
                 'order_id' => $this->order->id,
                 'response' => $response->body(),
             ]);
-            throw new \Exception('Fonnte WA failed: ' . ($response->json('reason') ?? $response->body()));
+            throw new \Exception('Fonnte WA certificate failed: ' . ($response->json('reason') ?? $response->body()));
         }
     }
 }

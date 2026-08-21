@@ -31,3 +31,7 @@ Thumbs.db
 *.exe
 *.bat
 *.cmd
+
+# Documentation and Tests (Ignored for deployment)
+*.md
+/tests

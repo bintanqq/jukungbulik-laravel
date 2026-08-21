@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'webhook/xendit',
         ]);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        $middleware->alias([
+            'streaming.session' => \App\Http\Middleware\VerifyStreamingSession::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

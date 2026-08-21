@@ -18,6 +18,9 @@ class EventSettingSeeder extends Seeder
             ['key' => 'contact_whatsapp', 'value' => '081234567890'],
             ['key' => 'contact_instagram', 'value' => '@jukungbulik'],
             ['key' => 'hero_overlay_opacity', 'value' => '0.8'],
+            ['key' => 'youtube_live_url', 'value' => ''],
+            ['key' => 'certificate_enabled', 'value' => 'true'],
+            ['key' => 'streaming_enabled', 'value' => 'true'],
         ]);
     }
 }

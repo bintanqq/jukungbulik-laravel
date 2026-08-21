@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PurchaseTicketRequest extends FormRequest
 {
@@ -17,7 +18,7 @@ class PurchaseTicketRequest extends FormRequest
             'nama'        => ['required', 'string', 'min:3', 'max:100'],
             'whatsapp'    => ['required', 'regex:/^08[0-9]{8,12}$/'],
             'email'       => ['required', 'email:rfc,dns', 'max:150'],
-            'category_id' => ['required', 'exists:ticket_categories,id'],
+            'category_id' => ['required', Rule::exists('ticket_categories', 'id')->where('is_active', true)],
             'quantity'    => ['required', 'integer', 'min:1', 'max:5'],
         ];
     }

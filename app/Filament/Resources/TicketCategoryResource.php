@@ -27,6 +27,10 @@ class TicketCategoryResource extends Resource
                 Forms\Components\TextInput::make('icon')->required()->maxLength(20),
                 Forms\Components\TagsInput::make('benefits')->required(),
                 Forms\Components\Toggle::make('is_active')->default(true),
+                Forms\Components\Toggle::make('is_streaming')
+                    ->label('Tiket Streaming')
+                    ->helperText('Aktifkan jika kategori ini adalah tiket streaming (online only)')
+                    ->default(false),
             ]);
     }
 
@@ -51,6 +55,10 @@ class TicketCategoryResource extends Resource
                         ->formatStateUsing(fn ($state, $record) => $record->sold . ' / ' . $state . ' Terjual')
                         ->color('gray')
                         ->icon('heroicon-m-ticket'),
+                    Tables\Columns\TextColumn::make('is_streaming')
+                        ->formatStateUsing(fn ($state) => $state ? 'Streaming (Online)' : 'Offline (Venue)')
+                        ->icon(fn ($state) => $state ? 'heroicon-m-video-camera' : 'heroicon-m-user-group')
+                        ->color(fn ($state) => $state ? 'info' : 'gray'),
                     Tables\Columns\ToggleColumn::make('is_active'),
                 ])->space(2),
             ])
